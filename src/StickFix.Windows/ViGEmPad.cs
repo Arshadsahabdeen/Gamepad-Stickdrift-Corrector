@@ -54,7 +54,7 @@ public sealed class ViGEmPad : IVirtualPad
                     created.Submit,
                     slot => XInput.TryRead(slot, out var state) ? state : null,
                     XInput.SlotCount,
-                    TimeSpan.FromSeconds(3),
+                    TimeSpan.FromSeconds(15),
                     () => Thread.Sleep(10))
                 ?? throw new VirtualPadException("The virtual controller was created but its output never appeared on any XInput slot. All four slots may be in use.");
             return created;

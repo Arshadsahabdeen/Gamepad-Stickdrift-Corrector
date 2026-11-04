@@ -11,7 +11,7 @@ Real controller --XInput--> IPhysicalPad --> PadCorrector --> IVirtualPad --ViGE
 | Concern | Where | Notes |
 |---|---|---|
 | Read | `XInputPad` | Polls only the selected slot. Polling empty slots is slow, so it rescans once a second |
-| Correct | `StickFix.Core` | Pure maths with no OS calls, fully unit-tested |
+| Correct | `StickFix.Core` | Pure maths with no OS calls |
 | Emit | `ViGEmPad` | Submits on change. Neutral on stop, disconnect and fault |
 | Hide | `HidingGuard`, `HidHideDriver` | Journaled so every change can be undone |
 | Feedback-loop guard | `ForwardingEngine` | Refuses to run if the physical slot equals the virtual slot |

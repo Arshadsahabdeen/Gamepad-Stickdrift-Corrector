@@ -17,7 +17,11 @@ public partial class StickTuner : UserControl
         set => Title.Text = value;
     }
 
-    public StickTuner() => InitializeComponent();
+    public StickTuner()
+    {
+        InitializeComponent();
+        Load(null);
+    }
 
     public void Load(StickSettings? settings)
     {

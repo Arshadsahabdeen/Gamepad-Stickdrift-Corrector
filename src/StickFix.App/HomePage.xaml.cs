@@ -82,7 +82,8 @@ public partial class HomePage : UserControl
         VirtualStatus.Text = !v.Running ? "Off"
             : v.Mismatches == 0 ? $"On (slot {v.VirtualSlot}), output verified"
             : $"On (slot {v.VirtualSlot}), {v.Mismatches} read-back mismatches. Check Help.";
-        GamesStatus.Text = !v.Running ? "Your real controller, with drift"
+        GamesStatus.Text = !v.Connected && !v.Running ? "No controller"
+            : !v.Running ? "Your real controller, with drift"
             : v.Hidden ? (v.CorrectionOn ? "Only the corrected controller" : "Only the virtual controller, with drift (Fix drift is off)")
             : "Both controllers. The real one still drifts until you hide it";
 

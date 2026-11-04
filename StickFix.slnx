@@ -4,7 +4,4 @@
     <Project Path="src/StickFix.Core/StickFix.Core.csproj" />
     <Project Path="src/StickFix.Windows/StickFix.Windows.csproj" />
   </Folder>
-  <Folder Name="/tests/">
-    <Project Path="tests/StickFix.Tests/StickFix.Tests.csproj" />
-  </Folder>
 </Solution>

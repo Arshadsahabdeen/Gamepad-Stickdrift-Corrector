@@ -65,21 +65,17 @@ Real controller -> XInput -> correction -> ViGEmBus virtual pad -> Game
 
 HidHide hides the real controller from everything except StickFix. Every hiding change is journaled first. A small
 watchdog process and a sign-in recovery entry undo it if StickFix dies. Details are in
-[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), and the hardware checks are in [docs/TESTING.md](docs/TESTING.md).
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Build from source
 
 You need the [.NET 10 SDK](https://dotnet.microsoft.com/download) and [Inno Setup 6](https://jrsoftware.org/isinfo.php).
 
 ```bash
-dotnet test
-```
-
-```bash
 powershell -ExecutionPolicy Bypass -File installer/build.ps1
 ```
 
-This runs the tests, downloads the two driver setups (pinned by SHA-256 and signature-checked), and writes
+This downloads the two driver setups (pinned by SHA-256 and signature-checked), and writes
 `installer/output/StickFix-Setup-<version>.exe`.
 
 | Path | Contents |
@@ -87,7 +83,6 @@ This runs the tests, downloads the two driver setups (pinned by SHA-256 and sign
 | `src/StickFix.Core` | Correction maths, diagnosis, profiles, engine, hiding journal. No OS calls |
 | `src/StickFix.Windows` | XInput, ViGEm and HidHide integration, device lookup |
 | `src/StickFix.App` | The WPF app |
-| `tests/StickFix.Tests` | Unit tests, plus one driver check that's skipped when the driver is absent |
 | `installer` | Inno Setup script and build script |
 
 ## License

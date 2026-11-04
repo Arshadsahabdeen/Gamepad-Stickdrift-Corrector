@@ -125,12 +125,13 @@ public static class LoopbackVerifier
     /// </summary>
     public static int? FindSlot(Action<PadState> submit, Func<int, PadState?> read, int slotCount, TimeSpan timeout, Action wait)
     {
-        submit(Marker);
         try
         {
             var timer = Stopwatch.StartNew();
             do
             {
+                // Sent every round: a report submitted before Windows finishes setting up the pad is lost.
+                submit(Marker);
                 for (var slot = 0; slot < slotCount; slot++)
                     if (read(slot) == Marker) return slot;
                 wait();

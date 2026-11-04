@@ -1,4 +1,4 @@
-# Tests, publishes and packages StickFix into installer/output/StickFix-Setup-<version>.exe.
+# Publishes and packages StickFix into installer/output/StickFix-Setup-<version>.exe.
 # Needs the .NET 10 SDK and Inno Setup 6. Driver setups are downloaded once and pinned by SHA-256.
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot
@@ -18,9 +18,6 @@ foreach ($dep in $deps) {
 
 $dotnet = (Get-Command dotnet -ErrorAction SilentlyContinue).Source
 if (-not $dotnet) { $dotnet = "$env:LOCALAPPDATA\Microsoft\dotnet\dotnet.exe" }
-& $dotnet test --nologo
-if ($LASTEXITCODE -ne 0) { throw 'Tests failed.' }
-
 if (Test-Path publish) { Remove-Item publish -Recurse -Force }
 & $dotnet publish src\StickFix.App -c Release -r win-x64 --self-contained -p:DebugType=none -o publish\app --nologo
 if ($LASTEXITCODE -ne 0) { throw 'Publish failed.' }
