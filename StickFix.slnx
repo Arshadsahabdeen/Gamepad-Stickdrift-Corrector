@@ -1,6 +1,6 @@
 <Solution>
   <Folder Name="/src/">
-    <Project Path="src/StickFix.Cli/StickFix.Cli.csproj" />
+    <Project Path="src/StickFix.App/StickFix.App.csproj" />
     <Project Path="src/StickFix.Core/StickFix.Core.csproj" />
     <Project Path="src/StickFix.Windows/StickFix.Windows.csproj" />
   </Folder>

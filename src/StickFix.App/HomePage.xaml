@@ -1,0 +1,105 @@
+<UserControl x:Class="StickFix.App.HomePage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:StickFix.App">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="24,20">
+            <Border Style="{StaticResource Card}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <Border x:Name="StatePill" HorizontalAlignment="Left" CornerRadius="10" Padding="10,2" Margin="0,0,0,8">
+                            <TextBlock x:Name="StateText" FontSize="12" FontWeight="SemiBold" AutomationProperties.AutomationId="StateText" />
+                        </Border>
+                        <TextBlock x:Name="Guidance" Style="{StaticResource PageTitle}" FontSize="20" AutomationProperties.AutomationId="Guidance" />
+                        <TextBlock x:Name="ProblemText" Style="{StaticResource Warning}" Margin="0,8,0,0"
+                                   Visibility="Collapsed" AutomationProperties.AutomationId="Problem" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="16,0,0,0">
+                        <Button x:Name="CalibrateNow" Content="Calibrate" MinWidth="110" Margin="0,0,8,0" Click="OnCalibrate"
+                                AutomationProperties.AutomationId="CalibrateNow" />
+                        <Button x:Name="StartStop" Content="Start" MinWidth="110" Style="{StaticResource PrimaryButton}" Click="OnStartStop"
+                                AutomationProperties.AutomationId="StartStop" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Controller" Style="{StaticResource Muted}" Margin="0,0,20,6" />
+                        <TextBlock x:Name="ControllerStatus" Grid.Column="1" Style="{StaticResource Body}" AutomationProperties.AutomationId="ControllerStatus" />
+                        <TextBlock Grid.Row="1" Text="Virtual pad" Style="{StaticResource Muted}" Margin="0,0,20,6" />
+                        <TextBlock x:Name="VirtualStatus" Grid.Row="1" Grid.Column="1" Style="{StaticResource Body}" AutomationProperties.AutomationId="VirtualStatus" />
+                        <TextBlock Grid.Row="2" Text="Games see" Style="{StaticResource Muted}" Margin="0,0,20,6" />
+                        <TextBlock x:Name="GamesStatus" Grid.Row="2" Grid.Column="1" Style="{StaticResource Body}" AutomationProperties.AutomationId="GamesStatus" />
+                    </Grid>
+                    <WrapPanel Margin="0,8,0,0">
+                        <CheckBox x:Name="CorrectionCheck" Content="Fix drift" IsChecked="True" Margin="0,0,24,0"
+                                  Checked="OnCorrection" Unchecked="OnCorrection" AutomationProperties.AutomationId="CorrectionCheck"
+                                  ToolTip="Untick to compare with no correction. Input keeps flowing." />
+                        <CheckBox x:Name="HideCheck" Content="Hide the real controller from games" Margin="0,0,16,0"
+                                  Checked="OnHide" Unchecked="OnHide" AutomationProperties.AutomationId="HideCheck"
+                                  ToolTip="Needed for games to get only the corrected input. Undone automatically when StickFix closes." />
+                        <Button x:Name="GetViGEm" Content="Install ViGEmBus driver" Margin="0,0,8,0" Click="OnGetViGEm" Visibility="Collapsed" />
+                        <Button x:Name="GetHidHide" Content="Install HidHide" Click="OnGetHidHide" Visibility="Collapsed" />
+                    </WrapPanel>
+                </StackPanel>
+            </Border>
+
+            <UniformGrid Columns="2">
+                <Border Style="{StaticResource Card}" Margin="0,0,6,12">
+                    <StackPanel>
+                        <TextBlock Text="Left stick" Style="{StaticResource Heading}" HorizontalAlignment="Center" />
+                        <local:StickView x:Name="LeftStick" HorizontalAlignment="Center" Margin="0,0,0,8"
+                                         AutomationProperties.Name="Left stick position" />
+                        <TextBlock x:Name="LeftText" FontFamily="Consolas" Foreground="{StaticResource MutedBrush}"
+                                   HorizontalAlignment="Center" AutomationProperties.AutomationId="LeftText" />
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Card}" Margin="6,0,0,12">
+                    <StackPanel>
+                        <TextBlock Text="Right stick" Style="{StaticResource Heading}" HorizontalAlignment="Center" />
+                        <local:StickView x:Name="RightStick" HorizontalAlignment="Center" Margin="0,0,0,8"
+                                         AutomationProperties.Name="Right stick position" />
+                        <TextBlock x:Name="RightText" FontFamily="Consolas" Foreground="{StaticResource MutedBrush}"
+                                   HorizontalAlignment="Center" AutomationProperties.AutomationId="RightText" />
+                    </StackPanel>
+                </Border>
+            </UniformGrid>
+            <TextBlock Style="{StaticResource Muted}" HorizontalAlignment="Center" Margin="0,0,0,12"
+                       Text="Hollow ring = your stick (raw).  Solid dot = sent to games.  Dashed circle = deadzone." />
+
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="24" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Name="LeftTriggerText" MinWidth="58" Margin="0,0,8,0" VerticalAlignment="Center" Foreground="{StaticResource MutedBrush}" />
+                        <ProgressBar x:Name="LeftTrigger" Grid.Column="1" Maximum="255" Height="8" Foreground="{StaticResource AccentBrush}" AutomationProperties.Name="Left trigger" />
+                        <TextBlock x:Name="RightTriggerText" Grid.Column="3" MinWidth="58" Margin="0,0,8,0" VerticalAlignment="Center" Foreground="{StaticResource MutedBrush}" />
+                        <ProgressBar x:Name="RightTrigger" Grid.Column="4" Maximum="255" Height="8" Foreground="{StaticResource AccentBrush}" AutomationProperties.Name="Right trigger" />
+                    </Grid>
+                    <WrapPanel x:Name="ButtonsPanel" HorizontalAlignment="Center" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

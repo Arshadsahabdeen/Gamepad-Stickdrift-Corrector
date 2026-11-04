@@ -1,0 +1,59 @@
+<UserControl x:Class="StickFix.App.CalibratePage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="24,20">
+            <TextBlock Style="{StaticResource PageTitle}" Text="Calibrate" Margin="0,0,0,16" />
+
+            <Border x:Name="IntroPanel" Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource Heading}" Text="Measure your controller" />
+                    <TextBlock Style="{StaticResource Body}" Text="This takes about 25 seconds. StickFix measures where your sticks really rest and how far they travel, then shows you the result before saving anything." />
+                    <TextBlock x:Name="IntroStatus" Style="{StaticResource Muted}" AutomationProperties.AutomationId="IntroStatus" />
+                    <Button x:Name="BeginButton" Content="Start calibration" Style="{StaticResource PrimaryButton}" HorizontalAlignment="Left" Margin="0,8,0,0"
+                            Click="OnBegin" AutomationProperties.AutomationId="BeginCalibration" />
+                </StackPanel>
+            </Border>
+
+            <Border x:Name="RunPanel" Style="{StaticResource Card}" Visibility="Collapsed">
+                <StackPanel>
+                    <TextBlock x:Name="OverallText" Style="{StaticResource Muted}" />
+                    <TextBlock x:Name="StepTitle" Style="{StaticResource PageTitle}" FontSize="20" Margin="0,0,0,8" AutomationProperties.AutomationId="StepTitle" AutomationProperties.LiveSetting="Assertive" />
+                    <TextBlock x:Name="StepText" Style="{StaticResource Body}" FontSize="15" />
+                    <ProgressBar x:Name="StepProgress" Height="8" Maximum="1" Margin="0,8,0,16" Foreground="{StaticResource AccentBrush}" />
+                    <Button Content="Cancel" HorizontalAlignment="Left" MinWidth="100" Click="OnCancel" />
+                </StackPanel>
+            </Border>
+
+            <StackPanel x:Name="ResultPanel" Visibility="Collapsed">
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock x:Name="ResultTitle" Style="{StaticResource Heading}" AutomationProperties.AutomationId="ResultTitle" />
+                        <TextBlock x:Name="LeftResult" Style="{StaticResource Body}" Margin="0,0,0,10" AutomationProperties.AutomationId="LeftResult" />
+                        <TextBlock x:Name="RightResult" Style="{StaticResource Body}" AutomationProperties.AutomationId="RightResult" />
+                        <TextBlock x:Name="Warnings" Style="{StaticResource Warning}" Margin="0,8,0,0" />
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource Heading}" Text="Correction strength" />
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                            <RadioButton x:Name="Minimal" Content="Minimal" GroupName="Strength" Margin="0,0,16,0" Click="OnStrength"
+                                         ToolTip="Smallest deadzone. Best aiming precision." />
+                            <RadioButton x:Name="Balanced" Content="Balanced" GroupName="Strength" IsChecked="True" Margin="0,0,16,0" Click="OnStrength"
+                                         ToolTip="The recommended choice." />
+                            <RadioButton x:Name="Strong" Content="Strong" GroupName="Strength" Click="OnStrength"
+                                         ToolTip="Larger deadzone. Use it if drift creeps back, at some cost to fine aiming." />
+                        </StackPanel>
+                        <CheckBox x:Name="OverrideCheck" Content="I understand the risk. Save it anyway." Visibility="Collapsed" Margin="0,0,0,12" Checked="OnOverride" Unchecked="OnOverride" />
+                        <StackPanel Orientation="Horizontal">
+                            <Button x:Name="SaveButton" Content="Save and use" Style="{StaticResource PrimaryButton}" Margin="0,0,8,0" Click="OnSave" AutomationProperties.AutomationId="SaveCalibration" />
+                            <Button Content="Measure again" MinWidth="130" Margin="0,0,8,0" Click="OnBegin" />
+                            <Button Content="Discard" MinWidth="100" Click="OnDiscard" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

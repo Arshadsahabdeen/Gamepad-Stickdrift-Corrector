@@ -81,6 +81,17 @@ public class ForwardingEngineTests
     }
 
     [Fact]
+    public void A_new_corrector_takes_effect_on_the_next_tick()
+    {
+        var virt = new FakeVirtual();
+        var engine = new ForwardingEngine(new FakePhysical { State = Held }, virt, null);
+        engine.Tick();
+        engine.SetCorrector(new PadCorrector(new StickSettings { DeadzoneInner = 0.5 }, new StickSettings()));
+        engine.Tick();
+        Assert.Equal(0, virt.Sent[^1].LeftX);
+    }
+
+    [Fact]
     public void Disconnect_releases_held_inputs_immediately()
     {
         var physical = new FakePhysical { State = Held };

@@ -1,0 +1,53 @@
+<UserControl x:Class="StickFix.App.HelpPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="24,20">
+            <TextBlock Style="{StaticResource PageTitle}" Text="Help" Margin="0,0,0,16" />
+
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource Heading}" Text="Something wrong with your controller?" />
+                    <TextBlock Style="{StaticResource Body}" Text="This makes your real controller visible to games again and turns off anything StickFix changed." />
+                    <Button Content="Restore my controller" Style="{StaticResource PrimaryButton}" HorizontalAlignment="Left" Margin="0,4,0,8" Click="OnRestore"
+                            AutomationProperties.AutomationId="RestoreController" />
+                    <TextBlock x:Name="RestoreStatus" Style="{StaticResource Body}" FontWeight="SemiBold" AutomationProperties.AutomationId="RestoreStatus" />
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource Heading}" Text="How to use it" />
+                    <TextBlock Style="{StaticResource Body}" Text="1. Plug in your controller and open StickFix." />
+                    <TextBlock Style="{StaticResource Body}" Text="2. Open Calibrate and follow the steps." />
+                    <TextBlock Style="{StaticResource Body}" Text="3. On Home, tick &quot;Hide the real controller from games&quot;." />
+                    <TextBlock Style="{StaticResource Body}" Text="4. Minimize StickFix. It moves to the system tray and keeps working while you play. Closing the window with X exits it." />
+                    <TextBlock Style="{StaticResource Muted}" Text="Start StickFix before your game. A game that's already running keeps its connection to the real controller until you restart it. If you can't see the tray icon, click the arrow next to the clock." />
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource Heading}" Text="What it can't do" />
+                    <TextBlock Style="{StaticResource Body}" Text="Software can't repair a worn stick. If your stick's rest position keeps changing, the only software fix is a larger deadzone, which costs fine aim. Replacing the stick is the real cure." />
+                    <TextBlock Style="{StaticResource Body}" Text="Some games and anti-cheat systems reject virtual controllers, and games that read Raw Input may still see the real controller. A game that only listens to the first controller slot may not see the virtual one. StickFix doesn't change your games or their files." />
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource Heading}" Text="Tools" />
+                    <CheckBox x:Name="Startup" Content="Start StickFix with Windows, in the tray" Margin="0,0,0,12" Checked="OnStartup" Unchecked="OnStartup" AutomationProperties.AutomationId="StartWithWindows" />
+                    <WrapPanel>
+                        <Button Content="Test virtual controller" Margin="0,0,8,8" Click="OnTest" AutomationProperties.AutomationId="TestVirtual"
+                                ToolTip="Presses every button on the virtual controller for a moment. Close games first." />
+                        <Button Content="Save a diagnostic report..." Margin="0,0,8,8" Click="OnReport" />
+                        <Button Content="Open log folder" Margin="0,0,8,8" Click="OnLogs" />
+                    </WrapPanel>
+                    <TextBlock x:Name="ToolStatus" Style="{StaticResource Body}" FontWeight="SemiBold" AutomationProperties.AutomationId="ToolStatus" />
+                    <TextBlock Style="{StaticResource Muted}" Text="StickFix stays on this PC. It collects no data and sends nothing over the internet. Reports are saved only where you choose." />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

@@ -11,7 +11,6 @@ public enum StickFinding
     RestrictedRange = 16,
     PossibleDamage = 32,
     MovedDuringTest = 64,
-    WrongAxisMapping = 128,
 }
 
 public sealed record AxisStats(
@@ -30,6 +29,9 @@ public enum CorrectionStrength { Minimal, Balanced, Strong }
 
 public sealed record Recommendation(
     StickSettings Settings, StickFinding Findings, Confidence Confidence, bool AutoApplyAllowed, IReadOnlyList<string> Warnings);
+
+/// <summary>RestBefore/RestAfter: largest distance from zero at rest. MinReach: weakest of the four directions.</summary>
+public sealed record CorrectionCheck(double RestBefore, double RestAfter, double MinReach);
 
 public static class Diagnosis
 {
@@ -80,10 +82,6 @@ public static class Diagnosis
         return findings;
     }
 
-    /// <summary>Check a guided "push the stick up" capture: Y must dominate and be positive.</summary>
-    public static bool AxisMappingLooksCorrect(double peakX, double peakY) =>
-        peakY > 0 && Math.Abs(peakY) > Math.Abs(peakX);
-
     public static Recommendation Recommend(
         IReadOnlyList<RestRun> runs, AxisRange rangeX, AxisRange rangeY, CorrectionStrength strength)
     {
@@ -93,21 +91,24 @@ public static class Diagnosis
 
         var k = strength switch { CorrectionStrength.Minimal => 1.2, CorrectionStrength.Strong => 2.5, _ => 1.5 };
         var wanted = k * (last.R99 + ReturnScatter(runs));
-        var deadzone = Math.Clamp(wanted, 0.02, MaxDeadzone);
+        // Floor from a real PowerA: a noise-free stick still came to rest about 2% away after being moved.
+        var deadzone = Math.Clamp(wanted, Math.Min(0.02 * k, MaxDeadzone), MaxDeadzone);
         if (wanted > MaxDeadzone)
             warnings.Add($"This stick would need a {wanted:P0} deadzone, more than the {MaxDeadzone:P0} limit. Fine aiming would suffer.");
         else if (wanted > WarnDeadzone)
             warnings.Add($"This stick needs a {wanted:P0} deadzone, large enough to reduce fine aiming precision.");
 
-        var (x, xOk) = BuildAxis(last.X.Median, rangeX);
-        var (y, yOk) = BuildAxis(last.Y.Median, rangeY);
+        // Average every rest position, so a stick that settles differently each time ends up nearest the middle.
+        var (x, xOk) = BuildAxis(runs.Average(r => r.X.Median), rangeX);
+        var (y, yOk) = BuildAxis(runs.Average(r => r.Y.Median), rangeY);
         if (!xOk || !yOk) warnings.Add("Stick range measurement was too small, so default range was used. Repeat the sweep at full tilt.");
 
         if (findings.HasFlag(StickFinding.MovedDuringTest)) warnings.Add("The stick moved during measurement. Repeat without touching it.");
         if (findings.HasFlag(StickFinding.UnstableDrift)) warnings.Add("Resting position wanders over time. A center offset can't fix this reliably.");
         if (findings.HasFlag(StickFinding.DoesNotReturn)) warnings.Add("The stick doesn't return to the same center after moving. This usually means mechanical wear.");
         if (findings.HasFlag(StickFinding.PossibleDamage)) warnings.Add("Readings suggest physical damage. Software correction may not be enough; consider repair or replacement.");
-        if (findings.HasFlag(StickFinding.RestrictedRange)) warnings.Add("Travel is restricted in at least one direction. Check for debris or damage.");
+        // A sweep too small to measure means the stick wasn't rotated, not that it's damaged.
+        if (findings.HasFlag(StickFinding.RestrictedRange) && xOk && yOk) warnings.Add("Travel is restricted in at least one direction. Check for debris or damage.");
 
         const StickFinding blocking = StickFinding.MovedDuringTest | StickFinding.UnstableDrift
             | StickFinding.DoesNotReturn | StickFinding.PossibleDamage;
@@ -120,6 +121,29 @@ public static class Diagnosis
         return new Recommendation(
             new StickSettings { X = x, Y = y, DeadzoneInner = deadzone, Hysteresis = deadzone * 0.25 },
             findings, confidence, allowed, warnings);
+    }
+
+    /// <summary>Replays captured samples through the settings: before/after proof shown to the user before saving.</summary>
+    public static CorrectionCheck Check(
+        StickSettings settings, IReadOnlyList<(double X, double Y)> rest, IReadOnlyList<(double X, double Y)> sweep)
+    {
+        double before = 0, after = 0, right = 0, left = 0, up = 0, down = 0;
+        var corrector = new StickCorrector(settings);
+        foreach (var (x, y) in rest)
+        {
+            var (ox, oy) = corrector.Apply(x, y, 0.008);
+            before = Math.Max(before, Hypot(x, y));
+            after = Math.Max(after, Hypot(ox, oy));
+        }
+        foreach (var (x, y) in sweep)
+        {
+            var (ox, oy) = corrector.Apply(x, y, 0.008);
+            right = Math.Max(right, ox);
+            left = Math.Max(left, -ox);
+            up = Math.Max(up, oy);
+            down = Math.Max(down, -oy);
+        }
+        return new CorrectionCheck(before, after, Math.Min(Math.Min(right, left), Math.Min(up, down)));
     }
 
     public static double ReturnScatter(IReadOnlyList<RestRun> runs)

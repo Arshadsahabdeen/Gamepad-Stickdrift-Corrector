@@ -87,13 +87,6 @@ public class DiagnosisTests
     public void Short_travel_is_restricted_range() =>
         Assert.True(Diagnosis.Classify([Rest(0, 0)], new AxisRange(-0.5, 1), Full).HasFlag(StickFinding.RestrictedRange));
 
-    [Theory]
-    [InlineData(0.05, 0.9, true)]
-    [InlineData(0.9, 0.05, false)]
-    [InlineData(0.05, -0.9, false)]
-    public void Axis_mapping_check(double peakX, double peakY, bool expected) =>
-        Assert.Equal(expected, Diagnosis.AxisMappingLooksCorrect(peakX, peakY));
-
     [Fact]
     public void Recommendation_centers_the_stick_and_stays_small_for_stable_offset()
     {
@@ -124,6 +117,19 @@ public class DiagnosisTests
         }
         Assert.Equal(1.0, corrector.Apply(0.02, 1.0, 0.004).Y, 6);
         Assert.Equal(-1.0, corrector.Apply(0.02, -1.0, 0.004).Y, 6);
+    }
+
+    [Fact]
+    public void A_noise_free_stick_that_settles_differently_stays_at_zero_at_every_rest_point()
+    {
+        // Real readings from the PowerA 20D6:2005 left stick across separate rests: no noise, but the center moved.
+        var runs = new[] { Rest(-0.0526, 0.1989, noise: 0), Rest(-0.0556, 0.2096, noise: 0), Rest(-0.0586, 0.2193, noise: 0) };
+        var rec = Diagnosis.Recommend(runs, Full, Full, CorrectionStrength.Balanced);
+
+        Assert.True(rec.AutoApplyAllowed);
+        Assert.Equal(0.2093, rec.Settings.Y.Center, 3);
+        foreach (var (x, y) in new[] { (-0.0526, 0.1989), (-0.0556, 0.2096), (-0.0586, 0.2193) })
+            Assert.Equal((0.0, 0.0), new StickCorrector(rec.Settings).Apply(x, y, 0.008));
     }
 
     [Fact]

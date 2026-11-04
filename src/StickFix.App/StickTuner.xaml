@@ -1,0 +1,28 @@
+<UserControl x:Class="StickFix.App.StickTuner"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:StickFix.App">
+    <StackPanel>
+        <TextBlock x:Name="Title" Style="{StaticResource Heading}" HorizontalAlignment="Center" />
+        <local:StickView x:Name="Preview" HorizontalAlignment="Center" Margin="0,0,0,12" AutomationProperties.Name="Stick preview" />
+
+        <TextBlock x:Name="DeadzoneLabel" Style="{StaticResource Muted}" Margin="0" />
+        <Slider x:Name="Deadzone" Minimum="0" Maximum="0.5" SmallChange="0.005" LargeChange="0.02" ValueChanged="OnChanged" Margin="0,0,0,8"
+                AutomationProperties.Name="Deadzone" ToolTip="Stick movement smaller than this is ignored. Lower keeps more fine control." />
+        <TextBlock x:Name="OuterLabel" Style="{StaticResource Muted}" Margin="0" />
+        <Slider x:Name="Outer" Minimum="0.6" Maximum="1" SmallChange="0.005" LargeChange="0.02" ValueChanged="OnChanged" Margin="0,0,0,8"
+                AutomationProperties.Name="Full output point" ToolTip="How far you must push to reach 100%." />
+        <TextBlock x:Name="SensitivityLabel" Style="{StaticResource Muted}" Margin="0" />
+        <Slider x:Name="Sensitivity" Minimum="0.5" Maximum="2" SmallChange="0.05" LargeChange="0.1" ValueChanged="OnChanged" Margin="0,0,0,8"
+                AutomationProperties.Name="Sensitivity" />
+        <TextBlock x:Name="CurveLabel" Style="{StaticResource Muted}" Margin="0" />
+        <Slider x:Name="Curve" Minimum="0.5" Maximum="3" SmallChange="0.05" LargeChange="0.1" ValueChanged="OnChanged" Margin="0,0,0,8"
+                AutomationProperties.Name="Response curve" ToolTip="Above 1: gentler near center, for precise aiming. 1: straight line." />
+
+        <CheckBox x:Name="Smooth" Content="Smooth out jitter (adds slight lag)" Checked="OnChanged" Unchecked="OnChanged" Margin="0,0,0,4" />
+        <CheckBox x:Name="InvertX" Content="Invert left/right" Checked="OnChanged" Unchecked="OnChanged" Margin="0,0,0,4" />
+        <CheckBox x:Name="InvertY" Content="Invert up/down" Checked="OnChanged" Unchecked="OnChanged" Margin="0,0,0,8" />
+        <Button Content="Reset curve settings" HorizontalAlignment="Left" Click="OnReset"
+                ToolTip="Back to straight response. Keeps your calibration and deadzone." />
+    </StackPanel>
+</UserControl>

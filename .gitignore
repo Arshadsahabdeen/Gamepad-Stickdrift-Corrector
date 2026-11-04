@@ -4,3 +4,5 @@ obj/
 *.user
 TestResults/
 publish/
+installer/deps/
+installer/output/

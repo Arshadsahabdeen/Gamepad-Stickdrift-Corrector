@@ -1,0 +1,23 @@
+<Window x:Class="StickFix.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:StickFix.App"
+        Title="StickFix" Width="1080" Height="780" MinWidth="880" MinHeight="560"
+        Icon="Assets/StickFix.ico" Background="{StaticResource BackgroundBrush}"
+        Foreground="{StaticResource TextBrush}"
+        WindowStartupLocation="CenterScreen">
+    <TabControl x:Name="Tabs" Style="{StaticResource SidebarTabs}">
+        <TabItem Header="Home" Tag="&#xE80F;" Style="{StaticResource NavItem}" AutomationProperties.AutomationId="TabHome">
+            <local:HomePage x:Name="Home" />
+        </TabItem>
+        <TabItem Header="Calibrate" Tag="&#xE7FC;" Style="{StaticResource NavItem}" AutomationProperties.AutomationId="TabCalibrate">
+            <local:CalibratePage x:Name="Calibrate" />
+        </TabItem>
+        <TabItem Header="Fine-tune" Tag="&#xE9E9;" Style="{StaticResource NavItem}" AutomationProperties.AutomationId="TabTune">
+            <local:TunePage x:Name="Tune" />
+        </TabItem>
+        <TabItem Header="Help" Tag="&#xE897;" Style="{StaticResource NavItem}" AutomationProperties.AutomationId="TabHelp">
+            <local:HelpPage x:Name="Help" />
+        </TabItem>
+    </TabControl>
+</Window>

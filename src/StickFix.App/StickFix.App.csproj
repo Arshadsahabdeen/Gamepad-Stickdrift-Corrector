@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <!-- Only for the system tray icon; WPF has none of its own. -->
+    <UseWindowsForms>true</UseWindowsForms>
+    <AssemblyName>StickFix</AssemblyName>
+    <RootNamespace>StickFix.App</RootNamespace>
+    <ApplicationIcon>Assets\StickFix.ico</ApplicationIcon>
+    <Product>StickFix</Product>
+    <Description>Controller stick drift correction</Description>
+    <!-- WPF0001: ThemeMode (the Fluent theme) is still marked experimental. -->
+    <NoWarn>$(NoWarn);WPF0001</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- These clash with WPF's Application, UserControl, Brushes and others. Tray.cs names them in full. -->
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\StickFix.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\StickFix.Core\StickFix.Core.csproj" />
+    <ProjectReference Include="..\StickFix.Windows\StickFix.Windows.csproj" />
+  </ItemGroup>
+</Project>

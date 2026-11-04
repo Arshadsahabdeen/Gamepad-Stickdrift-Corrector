@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using StickFix.Core;
 
@@ -94,6 +95,30 @@ public static class XInput
         public XInputVibration Vibration;
         public ushort VendorId, ProductId, VersionNumber, Unknown1;
         public uint Unknown2;
+    }
+}
+
+public sealed class PadDisconnectedException() : Exception("The controller disconnected during measurement. Reconnect it and try again.");
+
+public static class Sampler
+{
+    public const double RateHz = 125;
+
+    /// <summary>Reads a slot at a steady rate. Throws PadDisconnectedException if the pad goes away.</summary>
+    public static void Run(int slot, TimeSpan duration, Action<PadState> onSample, CancellationToken token = default)
+    {
+        using var timer = new HighResTimer();
+        var clock = Stopwatch.StartNew();
+        long taken = 0;
+        while (clock.Elapsed < duration)
+        {
+            token.ThrowIfCancellationRequested();
+            if (!XInput.TryRead(slot, out var state)) throw new PadDisconnectedException();
+            onSample(state);
+            taken++;
+            var due = TimeSpan.FromSeconds(taken / RateHz) - clock.Elapsed;
+            if (due > TimeSpan.Zero) Thread.Sleep(due);
+        }
     }
 }
 

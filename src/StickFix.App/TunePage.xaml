@@ -1,0 +1,26 @@
+<UserControl x:Class="StickFix.App.TunePage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:StickFix.App">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="24,20">
+            <TextBlock Style="{StaticResource PageTitle}" Text="Fine-tune" />
+            <TextBlock x:Name="Note" Style="{StaticResource Muted}" Margin="0,4,0,16" AutomationProperties.AutomationId="TuneNote" />
+            <UniformGrid Columns="2">
+                <Border Style="{StaticResource Card}" Margin="0,0,6,12">
+                    <local:StickTuner x:Name="LeftTuner" StickName="Left stick" />
+                </Border>
+                <Border Style="{StaticResource Card}" Margin="6,0,0,12">
+                    <local:StickTuner x:Name="RightTuner" StickName="Right stick" />
+                </Border>
+            </UniformGrid>
+            <WrapPanel>
+                <Button Content="Export profile..." Margin="0,0,8,8" Click="OnExport" />
+                <Button Content="Import profile..." Margin="0,0,8,8" Click="OnImport" />
+                <Button Content="Delete calibration" Margin="0,0,8,8" Click="OnDelete"
+                        ToolTip="Removes all correction for this controller." />
+            </WrapPanel>
+            <TextBlock x:Name="Status" Style="{StaticResource Warning}" />
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

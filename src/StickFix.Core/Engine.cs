@@ -19,7 +19,7 @@ public sealed class ForwardingEngine
 {
     private readonly IPhysicalPad _physical;
     private readonly IVirtualPad _virtual;
-    private readonly PadCorrector? _corrector;
+    private PadCorrector? _corrector;
     private readonly object _gate = new();
     private readonly Stopwatch _clock = Stopwatch.StartNew();
     private PadState _lastRaw, _lastEmitted;
@@ -38,6 +38,11 @@ public sealed class ForwardingEngine
     {
         get { lock (_gate) return _bypass; }
         set { lock (_gate) _bypass = value; }
+    }
+
+    public void SetCorrector(PadCorrector? corrector)
+    {
+        lock (_gate) _corrector = corrector;
     }
 
     public (bool Connected, PadState Raw, PadState Emitted) Snapshot()
