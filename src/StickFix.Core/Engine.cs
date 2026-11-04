@@ -111,6 +111,33 @@ public sealed record LoopbackResult(bool Passed, int Steps, IReadOnlyList<string
 /// <summary>Proves the emit path: what we submit must come back unchanged through the OS input API.</summary>
 public static class LoopbackVerifier
 {
+    // Tiny enough for a game to ignore, and a real stick won't land on exactly these four values.
+    private static readonly PadState Marker = new() { LeftX = 1, LeftY = -1, RightX = 2, RightY = -2 };
+
+    /// <summary>
+    /// Finds which input slot a virtual pad landed on by emitting a marker and seeing where it appears.
+    /// Driver-reported indexes can't be trusted: ViGEm reported slot 0 while a GIP pad already held slot 0.
+    /// </summary>
+    public static int? FindSlot(Action<PadState> submit, Func<int, PadState?> read, int slotCount, TimeSpan timeout, Action wait)
+    {
+        submit(Marker);
+        try
+        {
+            var timer = Stopwatch.StartNew();
+            do
+            {
+                for (var slot = 0; slot < slotCount; slot++)
+                    if (read(slot) == Marker) return slot;
+                wait();
+            } while (timer.Elapsed < timeout);
+            return null;
+        }
+        finally
+        {
+            submit(PadState.Neutral);
+        }
+    }
+
     public static IEnumerable<PadState> Pattern()
     {
         foreach (var button in PadButtons.All) yield return new PadState { Buttons = button };

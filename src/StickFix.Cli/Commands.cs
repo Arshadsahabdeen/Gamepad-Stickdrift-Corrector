@@ -18,17 +18,11 @@ public static class Commands
 
     public static int SelfTest()
     {
-        var before = XInput.Scan().Select(p => p.Slot).ToHashSet();
-        Console.WriteLine($"Before: pads on slots [{string.Join(", ", before)}]");
+        Console.WriteLine($"Before: pads on slots [{string.Join(", ", XInput.Scan().Select(p => p.Slot))}]");
 
         using var timer = new HighResTimer();
         using var pad = ViGEmPad.Create();
-        Console.WriteLine($"Virtual pad created, Windows assigned slot {pad.Slot}.");
-        if (before.Contains(pad.Slot))
-        {
-            Console.WriteLine("FAIL: that slot was already in use before we created the pad.");
-            return 1;
-        }
+        Console.WriteLine($"Virtual pad created, found on slot {pad.Slot}.");
 
         var result = LoopbackVerifier.Run(
             pad,
@@ -111,13 +105,11 @@ public static class Commands
 
     public static int Run(Options options)
     {
-        var info = options.PickPhysical();
-        var corrector = LoadCorrector(options, info);
-        var excluded = XInput.Scan().Where(p => p.Slot != info.Slot).Select(p => p.Slot).ToHashSet();
-
         using var timer = new HighResTimer();
         using var pad = ViGEmPad.Create();
-        excluded.Add(pad.Slot);
+        var info = options.PickPhysical(pad.Slot);
+        var corrector = LoadCorrector(options, info);
+        var excluded = XInput.Scan().Where(p => p.Slot != info.Slot).Select(p => p.Slot).ToHashSet();
         var physical = new XInputPad(info.Slot, options.Slot is null, excluded);
         pad.Rumble += (large, small) => XInput.SetRumble(physical.Slot, large, small);
 

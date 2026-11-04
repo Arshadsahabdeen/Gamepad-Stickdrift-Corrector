@@ -99,8 +99,9 @@ The six concerns you listed stay separate:
 3. **Emit**: `ViGEmPad`. Submits on change. Sends neutral on stop, disconnect and fault.
 4. **Hide**: `HidHideGuard`, Phase 4, with a guard rail (below).
 5. **Game sees only corrected**: manual per-game test. Raw Input games are a known gap.
-6. **No feedback loop**: the engine refuses to start if physical slot == virtual slot, and slot selection
-   excludes the virtual pad's reported `UserIndex`.
+6. **No feedback loop**: the engine refuses to start if physical slot == virtual slot. The virtual pad's slot
+   is found by emitting a tiny marker and seeing where it appears. Hardware test showed ViGEm's `UserIndex`
+   is not reliable: it reported slot 0 while a GIP-driver pad already held slot 0.
 
 **Verified means loopback.** A virtual pad counts as working only when the state read back through XInput on
 its slot equals what was sent. `selftest` does this with no physical controller.
@@ -168,7 +169,8 @@ need tuning against real sticks.
 - Games reading Raw Input may still see the physical pad.
 - Non-XInput PowerA models are unsupported until the HID backend exists.
 - XInput offers no serial number, so two identical pads share a VID:PID profile unless told apart by the USB
-  path (Phase 5). Wired and Bluetooth may show different IDs.
+  path (Phase 5). Wired and Bluetooth may show different IDs. Pads on Windows' Xbox GIP driver can report a
+  generic ID (`045E-02FF` for the tested PowerA, not a PowerA ID), so different models may share a profile.
 - ViGEmBus won't get fixes if Windows breaks it.
 - **The binaries are unsigned until a certificate is bought**, so SmartScreen will warn.
 

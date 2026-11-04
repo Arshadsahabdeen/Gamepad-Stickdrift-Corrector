@@ -11,7 +11,7 @@ untick "Enable device hiding", then close the client.
 
 | # | Command | Pass |
 |---|---|---|
-| A1 | `stickfix devices` with the pad plugged in | Exactly one slot listed, with an ID such as `20D6-xxxx`. **If nothing is listed, your PowerA isn't an XInput pad; tell me and I'll prioritise the HID backend** |
+| A1 | `stickfix devices` with the pad plugged in | Exactly one slot listed. The ID may be generic, such as `045E-02FF`, even on a third-party pad. **If nothing is listed, your PowerA isn't an XInput pad; tell me and I'll prioritise the HID backend** |
 | A2 | `stickfix selftest` | `PASS: all ... states read back identical` |
 | A3 | `stickfix raw`, with another window focused | Values change as you move the sticks. Every button and trigger changes the display |
 | A4 | `stickfix run --raw` | `RAW`, `EMIT` and `VIRT` agree as you move everything, and `mismatch` stays near 0 |

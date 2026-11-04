@@ -3,7 +3,6 @@ using Nefarius.ViGEm.Client;
 using Nefarius.ViGEm.Client.Exceptions;
 using Nefarius.ViGEm.Client.Targets;
 using Nefarius.ViGEm.Client.Targets.Xbox360;
-using Nefarius.ViGEm.Client.Targets.Xbox360.Exceptions;
 using StickFix.Core;
 
 namespace StickFix.Windows;
@@ -17,15 +16,14 @@ public sealed class ViGEmPad : IVirtualPad
     private readonly IXbox360Controller _pad;
     private bool _disposed;
 
-    public int Slot { get; }
+    public int Slot { get; private set; }
 
     public event Action<byte, byte>? Rumble;
 
-    private ViGEmPad(ViGEmClient client, IXbox360Controller pad, int slot)
+    private ViGEmPad(ViGEmClient client, IXbox360Controller pad)
     {
         _client = client;
         _pad = pad;
-        Slot = slot;
         _pad.FeedbackReceived += (_, e) => Rumble?.Invoke(e.LargeMotor, e.SmallMotor);
     }
 
@@ -51,7 +49,15 @@ public sealed class ViGEmPad : IVirtualPad
             pad = client.CreateXbox360Controller();
             pad.AutoSubmitReport = false;
             pad.Connect();
-            return new ViGEmPad(client, pad, WaitForSlot(pad));
+            var created = new ViGEmPad(client, pad);
+            created.Slot = LoopbackVerifier.FindSlot(
+                    created.Submit,
+                    slot => XInput.TryRead(slot, out var state) ? state : null,
+                    XInput.SlotCount,
+                    TimeSpan.FromSeconds(3),
+                    () => Thread.Sleep(10))
+                ?? throw new VirtualPadException("The virtual controller was created but its output never appeared on any XInput slot. All four slots may be in use.");
+            return created;
         }
         catch (Exception e)
         {
@@ -87,23 +93,5 @@ public sealed class ViGEmPad : IVirtualPad
             Trace.TraceError($"Virtual pad shutdown: {e.Message}");
         }
         _client.Dispose();
-    }
-
-    // The slot is assigned asynchronously by the XUSB stack after plug-in.
-    private static int WaitForSlot(IXbox360Controller pad)
-    {
-        var timer = Stopwatch.StartNew();
-        while (timer.Elapsed < TimeSpan.FromSeconds(3))
-        {
-            try
-            {
-                return pad.UserIndex;
-            }
-            catch (Xbox360UserIndexNotReportedException)
-            {
-                Thread.Sleep(50);
-            }
-        }
-        throw new VirtualPadException("The virtual controller was created but Windows never assigned it an XInput slot. All four slots may be in use.");
     }
 }

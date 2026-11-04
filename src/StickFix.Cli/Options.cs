@@ -35,10 +35,10 @@ public sealed class Options(string[] args)
         _ => throw new UsageException("--strength must be minimal, balanced or strong."),
     };
 
-    /// <summary>Picks a physical pad. Must run before our virtual pad exists, so it can't pick itself.</summary>
-    public SlotInfo PickPhysical()
+    /// <summary>Picks a physical pad, never the slot holding our own virtual pad.</summary>
+    public SlotInfo PickPhysical(int? virtualSlot = null)
     {
-        var pads = XInput.Scan();
+        var pads = XInput.Scan().Where(p => p.Slot != virtualSlot).ToList();
         if (Slot is { } slot)
             return pads.FirstOrDefault(p => p.Slot == slot) ?? throw new UsageException($"No controller on slot {slot}.");
 

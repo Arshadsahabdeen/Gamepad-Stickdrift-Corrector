@@ -158,6 +158,24 @@ public class ForwardingEngineTests
 public class LoopbackVerifierTests
 {
     [Fact]
+    public void FindSlot_finds_the_marker_not_the_physical_pad_on_a_lower_slot()
+    {
+        var sent = new List<PadState>();
+        var physical = new PadState { LeftX = 1000 };
+        var slot = LoopbackVerifier.FindSlot(sent.Add, s => s == 0 ? physical : s == 1 ? sent[^1] : null, 4, TimeSpan.FromMilliseconds(5), () => { });
+        Assert.Equal(1, slot);
+        Assert.Equal(PadState.Neutral, sent[^1]);
+    }
+
+    [Fact]
+    public void FindSlot_returns_null_and_ends_neutral_when_output_never_appears()
+    {
+        var sent = new List<PadState>();
+        Assert.Null(LoopbackVerifier.FindSlot(sent.Add, _ => PadState.Neutral, 4, TimeSpan.FromMilliseconds(1), () => { }));
+        Assert.Equal(PadState.Neutral, sent[^1]);
+    }
+
+    [Fact]
     public void Pattern_covers_every_button_and_extreme_and_ends_neutral()
     {
         var pattern = LoopbackVerifier.Pattern().ToList();
